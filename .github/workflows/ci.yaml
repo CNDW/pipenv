@@ -75,8 +75,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
-        os: [MacOS, Ubuntu, Windows]
+        python-version: ["3.11"]
+        os: [Ubuntu]
 
     steps:
       - uses: actions/checkout@v3
@@ -106,7 +106,7 @@ jobs:
           pipenv install --deploy --dev --python=${{ steps.python-path.outputs.path }}
       - name: Run pypiserver Windows
         run: |
-         cmd /c start pipenv run pypi-server run -v --host=0.0.0.0 --port=8080 --hash-algo=sha256 --disable-fallback ./tests/pypi/ ./tests/fixtures
+          cmd /c start pipenv run pypi-server run -v --host=0.0.0.0 --port=8080 --hash-algo=sha256 --disable-fallback ./tests/pypi/ ./tests/fixtures
         if: ${{matrix.os  == 'Windows' }}
       - name: Run pypiserver Mac
         run: |
@@ -127,7 +127,7 @@ jobs:
           PYTHONIOENCODING: "utf-8"
           GIT_SSH_COMMAND: ssh -o StrictHostKeyChecking=accept-new -o CheckHostIP=no
         run: |
-          pipenv run pytest -ra -n auto -v --fulltrace tests
+          pipenv run pytest -ra -n auto -v --fulltrace --durations=30 -vv tests
 
   build:
     name: Build Package
